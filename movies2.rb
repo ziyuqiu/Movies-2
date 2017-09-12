@@ -19,7 +19,7 @@ class MovieData
 					@userhash[user_id] = Hash.new
 				end
 				@userhash[user_id][movie_id] = rating
-	  		end	  		
+			end	  		
 		f.close
 	end
 
@@ -38,7 +38,7 @@ class MovieData
 		#popularity(mov_id) gets the popularity of this movie_id
 		#moviehash.map gets the popularity of each movie in the moviehash
 		#.sort_by sort it by pop(popularity) descendingly
-		@popularityhash = @moviehash.map{|mov_id,_| [mov_id,popularity(mov_id)]}.sort_by{|k,pop| -pop}
+		@popularityhash = @moviehash.map{|mov_id,_| [mov_id,popularity(mov_id)]}.sort_by{|_,pop| -pop}
 	end
 
 	#generates a number between 0 and 1 indicating the 
@@ -58,12 +58,12 @@ class MovieData
 	#this return a list of users whose tastes are most similar 
 	#to the tastes of user u
 	def most_similar(u)	
-		@simhash = @userhash.reject{|x| x==u}.map{|user,val| [user,similarity(u,user)]}.sort_by{|k,v| -v}.first 10
+		@simhash = @userhash.reject{|x| x==u}.map{|user,_| [user,similarity(u,user)]}.sort_by{|_,v| -v}.first 10
 	end
 end
 
 class Ratings
-	def predict(user, movie, userhash1, moviehash1, simlst, popularity)
+	def predict(user, movie, userhash1, simlst, popularity)
 		#Based on this user's rating history, determine whether this user grades harshly
 		pastscore = userhash1[user].values.inject{ |sum, el| sum+el}.to_f / userhash1[user].size
 		#Based on the scores given by most similar users, predict a score
@@ -124,7 +124,7 @@ class Control
 			simlst = @moviedata1.most_similar(usr[0])
 			@userhash2[usr[0]].each do |mv|
 				ppl = @moviedata1.popularity(mv[0])
-				predict_result = predict_result = pre.predict(usr[0], mv[0],@userhash1, @moviehash1, simlst,ppl)
+				predict_result = predict_result = pre.predict(usr[0], mv[0],@userhash1, simlst,ppl)
 				@predicthash[usr[0]][mv[0]] = predict_result
 			end
 		end
